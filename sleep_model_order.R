@@ -4,7 +4,6 @@ sleep_data <- read.table("sleep.txt", header = TRUE)
 
 # now remove the rows with na values
 good_data <- subset(sleep_data, Dreaming > 0 & !is.na(Dreaming) & !is.na(NonDreaming) & !is.na(LifeSpan) & !is.na(Gestation) & !is.na(Predation) & !is.na(TotalSleep))
-#good_data <- good_data[-41,]
 
 attach(good_data)
 
@@ -194,19 +193,15 @@ mSimple <- lm((TotalSleep**.3) ~ 1)
 forwardAIC <- stepAIC(mSimple, direction = "forward", k = 2, scope=list(upper=mod7,lower=mSimple))
 summary(forwardAIC)
 vif(forwardAIC)
-
-
-mSimple <- lm((TotalSleep**.3) ~ 1)
-bothAIC <- stepAIC(mSimple, direction = "both", k = 2, scope=list(upper=mod7,lower=mSimple))
-
-
 par(mfrow=c(2,2))
 plot(forwardAIC)
 boxcox(forwardAIC)
 
-# compromise backward and forward
-mod8 <- lm((TotalSleep**.3) ~ log(BodyWt) + log(LifeSpan) + log(Gestation) + Danger)
-summary(mod8)
 
-# but then log(Lifespan) is not significant
+mSimple <- lm((TotalSleep**.3) ~ 1)
+bothAIC <- stepAIC(mSimple, direction = "both", k = 2, scope=list(upper=mod7,lower=mSimple))
+summary(bothAIC)
+
+# direction="both" gave the same result as forward, so we choose forward model,
+# even though the diagnostic plots don't look as good
 
